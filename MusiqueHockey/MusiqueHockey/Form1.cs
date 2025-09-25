@@ -24,8 +24,6 @@ namespace MusiqueHockey
         private string butPath;
         private string allPath;
         private string warmupPath;
-        private string warmup1Path;
-        private string warmup2Path;
         private string PowerPlayPath;
         private string pkPath;
         private string entractePath;
@@ -48,16 +46,12 @@ namespace MusiqueHockey
             butPath = Path.Combine(basePath, "netX\\musiques\\");
             allPath = Path.Combine(basePath, "netX\\musiques\\all\\");
             warmupPath = Path.Combine(basePath, "netX\\musiques\\warmup\\");
-            warmup1Path = Path.Combine(basePath, "netX\\musiques\\warmup1\\");
-            warmup2Path = Path.Combine(basePath, "netX\\musiques\\warmup2\\");
             PowerPlayPath = Path.Combine(basePath, "netX\\musiques\\PPLocal\\");
             pkPath = Path.Combine(basePath, "netX\\musiques\\PPvis\\");
             entractePath = Path.Combine(basePath, "netX\\musiques\\entracte\\");
 
             InitEquipes();
             InitPlaylist();
-            InitWarmup1Playlist();
-            InitWarmup2Playlist();
             InitPowerPlayPlaylist();
             InitPKPlaylist();
             InitEntracte();
@@ -123,29 +117,6 @@ namespace MusiqueHockey
                 foreach (var file in Directory.GetFiles(pkPath, "*.mp3"))
                 {
                     pkPlaylist.Add(new Musique(Path.GetFileNameWithoutExtension(file), file));
-                }
-            }
-        }
-        private void InitWarmup1Playlist()
-        {
-            warmup1Playlist = new List<Musique>();
-            if (Directory.Exists(warmup1Path))
-            {
-                foreach (var file in Directory.GetFiles(warmup1Path, "*.mp3"))
-                {
-                    warmup1Playlist.Add(new Musique(Path.GetFileNameWithoutExtension(file), file));
-                }
-            }
-        }
-
-        private void InitWarmup2Playlist()
-        {
-            warmup2Playlist = new List<Musique>();
-            if (Directory.Exists(warmup2Path))
-            {
-                foreach (var file in Directory.GetFiles(warmup2Path, "*.mp3"))
-                {
-                    warmup2Playlist.Add(new Musique(Path.GetFileNameWithoutExtension(file), file));
                 }
             }
         }
