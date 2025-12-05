@@ -83,12 +83,12 @@
             // 
             EntracteBtn.Location = new Point(349, 210);
             EntracteBtn.Margin = new Padding(4);
-            EntracteBtn.Name = "EntracteBtn";
+            EntracteBtn.Name = "finGameBtn";
             EntracteBtn.Size = new Size(210, 46);
             EntracteBtn.TabIndex = 6;
-            EntracteBtn.Text = "Entracte";
+            EntracteBtn.Text = "Fin de Game";
             EntracteBtn.UseVisualStyleBackColor = true;
-            EntracteBtn.Click += EntracteBtn_Click;
+            EntracteBtn.Click += finGameBtn_Click;
             // 
             // PenLocalBtn
             // 

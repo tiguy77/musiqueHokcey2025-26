@@ -32,7 +32,7 @@ namespace MusiqueHockey
         private List<Musique> warmup2Playlist;
         private List<Musique> powerPlayPlaylist;
         private List<Musique> pkPlaylist;
-        private List<Musique> entractePlaylist;
+        private List<Musique> finGamePlaylist;
         private int currentTrackIndex = 0;
         private int warmupTrackIndex = 0;
         private Musique musiqueEnCours;
@@ -48,7 +48,7 @@ namespace MusiqueHockey
             warmupPath = Path.Combine(basePath, "netX\\musiques\\warmup\\");
             PowerPlayPath = Path.Combine(basePath, "netX\\musiques\\PPLocal\\");
             pkPath = Path.Combine(basePath, "netX\\musiques\\PPvis\\");
-            entractePath = Path.Combine(basePath, "netX\\musiques\\entracte\\");
+            entractePath = Path.Combine(basePath, "netX\\musiques\\finGame\\");
 
             InitEquipes();
             InitPlaylist();
@@ -89,12 +89,12 @@ namespace MusiqueHockey
         }
         private void InitEntracte()
         {
-            entractePlaylist = new List<Musique>();
+            finGamePlaylist = new List<Musique>();
             if (Directory.Exists(entractePath))
             {
                 foreach (var file in Directory.GetFiles(entractePath, "*.mp3"))
                 {
-                    entractePlaylist.Add(new Musique(Path.GetFileNameWithoutExtension(file), file));
+                    finGamePlaylist.Add(new Musique(Path.GetFileNameWithoutExtension(file), file));
                 }
             }
         }
@@ -199,9 +199,9 @@ namespace MusiqueHockey
             }
         }
 
-        private void EntracteBtn_Click(object sender, EventArgs e)
+        private void finGameBtn_Click(object sender, EventArgs e)
         {
-            if (entractePlaylist.Count == 0) return;
+            if (finGamePlaylist.Count == 0) return;
             // Vérifier si une musique joue et l'arrêter si nécessaire
             if (musiqueEnCours != null && musiqueEnCours.IsPlaying)
             {
@@ -213,11 +213,11 @@ namespace MusiqueHockey
             // Si la musique a été stoppée, on passe à la suivante
             if (musiqueStoppee)
             {
-                currentTrackIndex = (currentTrackIndex + 1) % entractePlaylist.Count;
+                currentTrackIndex = (currentTrackIndex + 1) % finGamePlaylist.Count;
                 musiqueStoppee = false; // Réinitialisation du flag après changement de musique
             }
             // Jouer la nouvelle musique
-            musiqueEnCours = entractePlaylist[currentTrackIndex];
+            musiqueEnCours = finGamePlaylist[currentTrackIndex];
             musiqueEnCours.PlayMusique();
         }
         private void PenLocalBtn_Click(object sender, EventArgs e)

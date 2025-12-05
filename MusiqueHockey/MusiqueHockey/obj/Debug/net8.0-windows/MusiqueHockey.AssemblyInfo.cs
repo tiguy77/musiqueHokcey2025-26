@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MusiqueHockey")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+60a8452aecff9d20f4223a8d99d4b08677d66721")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+564d9ff9868a68762f92211d6897768f1e77ebe0")]
 [assembly: System.Reflection.AssemblyProductAttribute("MusiqueHockey")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MusiqueHockey")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
