@@ -10,6 +10,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MusiqueHockey.Classes;
+using MusiqueHockey.Models;
+using MusiqueHockey.Services;
 
 namespace MusiqueHockey
 {
@@ -36,13 +38,15 @@ namespace MusiqueHockey
         private int currentTrackIndex = 0;
         private int warmupTrackIndex = 0;
         private Musique musiqueEnCours;
-        public Form1()
-        {
-            InitializeComponent();
+        private readonly CloudMusicService cloudMusicService;
+        private readonly AppUser currentUser;
 
-            AllocConsole();
+        public Form1(CloudMusicService cloudMusicService, AppUser currentUser)
+        {
+            this.cloudMusicService = cloudMusicService;
+            this.currentUser = currentUser;
+            InitializeComponent();
             basePath = AppDomain.CurrentDomain.BaseDirectory;
-            Console.WriteLine("Chemin de base : " + AppDomain.CurrentDomain.BaseDirectory);
             butPath = Path.Combine(basePath, "netX\\musiques\\");
             allPath = Path.Combine(basePath, "netX\\musiques\\all\\");
             warmupPath = Path.Combine(basePath, "netX\\musiques\\warmup\\");
@@ -55,25 +59,53 @@ namespace MusiqueHockey
             InitPowerPlayPlaylist();
             InitPKPlaylist();
             InitEntracte();
+            UserLabel.Text = currentUser.DisplayName;
+            StatusLabel.Text = $"Pr√™t ‚Ä¢ {playlist.Count} pistes locales";
+        }
 
+        private async void SyncButton_Click(object sender, EventArgs e)
+        {
+            SyncButton.Enabled = false;
+            SyncButton.Text = "Synchronisation‚Ä¶";
+            try
+            {
+                var root = Path.Combine(basePath, "netX", "musiques");
+                var progress = new Progress<(int current, int total, string title)>(item =>
+                    StatusLabel.Text = $"T√©l√©chargement {item.current}/{item.total} ‚Ä¢ {item.title}");
+                var count = await cloudMusicService.DownloadAllAsync(root, progress);
+                InitPlaylist(); InitPowerPlayPlaylist(); InitPKPlaylist(); InitEntracte();
+                StatusLabel.Text = $"√Ä jour ‚Ä¢ {count} pistes t√©l√©charg√©es";
+                MessageBox.Show($"{count} pistes sont maintenant disponibles hors ligne.", "Synchronisation termin√©e", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception exception)
+            {
+                StatusLabel.Text = "√âchec de la synchronisation";
+                MessageBox.Show($"T√©l√©chargement impossible.\n\n{exception.Message}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                SyncButton.Enabled = true;
+                SyncButton.Text = "‚òÅ  T√©l√©charger les musiques";
+            }
         }
         private void InitEquipes()
         {
             equipes = new Dictionary<string, Equipe>
        {
-               { "Assurance SÈguin", new Equipe("Assurance SÈguin", "seguin_logo.png", new Musique("But Assurance SÈguin", Path.Combine(butPath, "buts\\seguin_music.mp3")),new Musique("Warmup Assurance SÈguin", Path.Combine(warmupPath, "seguin_music.mp3"))) },
-               { "**Seguin Special", new Equipe("**Seguin Special", "seguin_logo.png", new Musique("But Assurance SÈguin", Path.Combine(butPath, "buts\\seguinSP_music.mp3")),new Musique("Warmup Assurance SÈguin", Path.Combine(warmupPath, "seguin_music.mp3"))) },
+               { "Assurance S√©guin", new Equipe("Assurance S√©guin", "seguin_logo.png", new Musique("But Assurance S√©guin", Path.Combine(butPath, "buts\\seguin_music.mp3")),new Musique("Warmup Assurance S√©guin", Path.Combine(warmupPath, "seguin_music.mp3"))) },
+               { "**Seguin Special", new Equipe("**Seguin Special", "seguin_logo.png", new Musique("But Assurance S√©guin", Path.Combine(butPath, "buts\\seguinSP_music.mp3")),new Musique("Warmup Assurance S√©guin", Path.Combine(warmupPath, "seguin_music.mp3"))) },
                { "Coffrages Thibault", new Equipe("Coffrages Thibault", "thibault_logo.png", new Musique("But Coffrages Thibault", Path.Combine(butPath, "buts\\thibault_music.mp3")),new Musique("Warmup Coffrages Thibault", Path.Combine(warmupPath, "thibault_music.mp3"))) },
-               { "Concept PhÈnix", new Equipe("Concept PhÈnix", "phenix_logo.png", new Musique("But Concept PhÈnix", Path.Combine(butPath, "buts\\phenix_music.mp3")),new Musique("Warmup Concept PhÈnix", Path.Combine(warmupPath, "phenix_music.mp3"))) },
+               { "Concept Ph√©nix", new Equipe("Concept Ph√©nix", "phenix_logo.png", new Musique("But Concept Ph√©nix", Path.Combine(butPath, "buts\\phenix_music.mp3")),new Musique("Warmup Concept Ph√©nix", Path.Combine(warmupPath, "phenix_music.mp3"))) },
                { "Laporte&Fils", new Equipe("Laporte&Fils", "Laporte_logo.png", new Musique("But Laporte", Path.Combine(butPath, "buts\\laporte_music.mp3")),new Musique("Warmup Laporte", Path.Combine(warmupPath, "laporte_music.mp3"))) },
                { "Fauteux Mini-Moteur", new Equipe("Fauteux Mini-Moteur", "fauteux_logo.png", new Musique("But Fauteux Mini-Moteur", Path.Combine(butPath, "buts\\fauteux_music.mp3")),new Musique("Warmup Fauteux Mini-Moteur", Path.Combine(warmupPath, "fauteux_music.mp3"))) },
                { "Hubby Mike", new Equipe("Hubby Mike", "hubby_logo.png", new Musique("But Hubby Mike", Path.Combine(butPath, "buts\\hubby_music.mp3")),new Musique("Warmup Hubby Mike", Path.Combine(warmupPath, "hubby_music.mp3"))) },
                { "Orlando", new Equipe("Orlando", "orlando_logo.png", new Musique("But Orlando", Path.Combine(butPath, "buts\\orlando_music.mp3")),new Musique("Warmup Orlando", Path.Combine(warmupPath, "orlando_music.mp3"))) },
-               { "VÈrisÈcur", new Equipe("VÈrisÈcur", "verisecur_logo.png", new Musique("But VÈrisÈcur", Path.Combine(butPath, "buts\\verisecur_music.mp3")),new Musique("Warmup VÈrisÈcur", Path.Combine(warmupPath, "verisecur_music.mp3"))) }
+               { "V√©ris√©cur", new Equipe("V√©ris√©cur", "verisecur_logo.png", new Musique("But V√©ris√©cur", Path.Combine(butPath, "buts\\verisecur_music.mp3")),new Musique("Warmup V√©ris√©cur", Path.Combine(warmupPath, "verisecur_music.mp3"))) }
             };
             foreach (var equipe in equipes.Keys)
             {
                 LocalBox.Items.Add(equipe);
+                VisiteurBox.Items.Add(equipe);
             }
         }
         private void InitPlaylist()
@@ -135,25 +167,25 @@ namespace MusiqueHockey
         private void PlayMusiqueBtn_Click(object sender, EventArgs e)
         {
             if (playlist.Count == 0) return;
-            // VÈrifier si une musique joue et l'arrÍter si nÈcessaire
+            // V√©rifier si une musique joue et l'arr√™ter si n√©cessaire
             if (musiqueEnCours != null && musiqueEnCours.IsPlaying)
             {
                 musiqueEnCours.Stop();
                 musiqueEnCours = null;
-                musiqueStoppee = true; // On note que la musique a ÈtÈ stoppÈe
+                musiqueStoppee = true; // On note que la musique a √©t√© stopp√©e
                 EntracteBtn.Enabled = true;
                 LocalButBtn.Enabled = true;
                 VisiteurButBtn.Enabled = true;
                 WarmUpbtn.Enabled = true;
                 PenLocalBtn.Enabled = true;
                 PenVisBtn.Enabled = true;
-                return; // On sort de la mÈthode sans changer de musique
+                return; // On sort de la m√©thode sans changer de musique
             }
-            // Si la musique a ÈtÈ stoppÈe, on passe ‡ la suivante
+            // Si la musique a √©t√© stopp√©e, on passe √† la suivante
             if (musiqueStoppee)
             {
                 currentTrackIndex = (currentTrackIndex + 1) % playlist.Count;
-                musiqueStoppee = false; // RÈinitialisation du flag aprËs changement de musique
+                musiqueStoppee = false; // R√©initialisation du flag apr√®s changement de musique
             }
             // Jouer la nouvelle musique
             musiqueEnCours = playlist[currentTrackIndex];
@@ -173,7 +205,7 @@ namespace MusiqueHockey
             }
             else
             {
-                MessageBox.Show("Veuillez sÈlectionner une Èquipe valide.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Veuillez s√©lectionner une √©quipe valide.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
         private void VisiteurButBtn_Click(object sender, EventArgs e)
@@ -184,7 +216,7 @@ namespace MusiqueHockey
             }
             else
             {
-                MessageBox.Show("Aucune Èquipe visiteuse dÈfinie.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Aucune √©quipe visiteuse d√©finie.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
         private void WarmUpBtn_Click(object sender, EventArgs e)
@@ -195,26 +227,26 @@ namespace MusiqueHockey
             }
             else
             {
-                MessageBox.Show("Veuillez sÈlectionner une Èquipe valide.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Veuillez s√©lectionner une √©quipe valide.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
         private void EntracteBtn_Click(object sender, EventArgs e)
         {
             if (entractePlaylist.Count == 0) return;
-            // VÈrifier si une musique joue et l'arrÍter si nÈcessaire
+            // V√©rifier si une musique joue et l'arr√™ter si n√©cessaire
             if (musiqueEnCours != null && musiqueEnCours.IsPlaying)
             {
                 musiqueEnCours.Stop();
                 musiqueEnCours = null;
-                musiqueStoppee = true; // On note que la musique a ÈtÈ stoppÈe
-                return; // On sort de la mÈthode sans changer de musique
+                musiqueStoppee = true; // On note que la musique a √©t√© stopp√©e
+                return; // On sort de la m√©thode sans changer de musique
             }
-            // Si la musique a ÈtÈ stoppÈe, on passe ‡ la suivante
+            // Si la musique a √©t√© stopp√©e, on passe √† la suivante
             if (musiqueStoppee)
             {
                 currentTrackIndex = (currentTrackIndex + 1) % entractePlaylist.Count;
-                musiqueStoppee = false; // RÈinitialisation du flag aprËs changement de musique
+                musiqueStoppee = false; // R√©initialisation du flag apr√®s changement de musique
             }
             // Jouer la nouvelle musique
             musiqueEnCours = entractePlaylist[currentTrackIndex];
@@ -223,19 +255,19 @@ namespace MusiqueHockey
         private void PenLocalBtn_Click(object sender, EventArgs e)
         {
             if (powerPlayPlaylist.Count == 0) return;
-            // VÈrifier si une musique joue et l'arrÍter si nÈcessaire
+            // V√©rifier si une musique joue et l'arr√™ter si n√©cessaire
             if (musiqueEnCours != null && musiqueEnCours.IsPlaying)
             {
                 musiqueEnCours.Stop();
                 musiqueEnCours = null;
-                musiqueStoppee = true; // On note que la musique a ÈtÈ stoppÈe
-                return; // On sort de la mÈthode sans changer de musique
+                musiqueStoppee = true; // On note que la musique a √©t√© stopp√©e
+                return; // On sort de la m√©thode sans changer de musique
             }
-            // Si la musique a ÈtÈ stoppÈe, on passe ‡ la suivante
+            // Si la musique a √©t√© stopp√©e, on passe √† la suivante
             if (musiqueStoppee)
             {
                 currentTrackIndex = (currentTrackIndex + 1) % powerPlayPlaylist.Count;
-                musiqueStoppee = false; // RÈinitialisation du flag aprËs changement de musique
+                musiqueStoppee = false; // R√©initialisation du flag apr√®s changement de musique
             }
             // Jouer la nouvelle musique
             musiqueEnCours = powerPlayPlaylist[currentTrackIndex];
@@ -244,19 +276,19 @@ namespace MusiqueHockey
         private void PenVisBtn_Click(object sender, EventArgs e)
         {
             if (pkPlaylist.Count == 0) return;
-            // VÈrifier si une musique joue et l'arrÍter si nÈcessaire
+            // V√©rifier si une musique joue et l'arr√™ter si n√©cessaire
             if (musiqueEnCours != null && musiqueEnCours.IsPlaying)
             {
                 musiqueEnCours.Stop();
                 musiqueEnCours = null;
-                musiqueStoppee = true; // On note que la musique a ÈtÈ stoppÈe
-                return; // On sort de la mÈthode sans changer de musique
+                musiqueStoppee = true; // On note que la musique a √©t√© stopp√©e
+                return; // On sort de la m√©thode sans changer de musique
             }
-            // Si la musique a ÈtÈ stoppÈe, on passe ‡ la suivante
+            // Si la musique a √©t√© stopp√©e, on passe √† la suivante
             if (musiqueStoppee)
             {
                 currentTrackIndex = (currentTrackIndex + 1) % pkPlaylist.Count;
-                musiqueStoppee = false; // RÈinitialisation du flag aprËs changement de musique
+                musiqueStoppee = false; // R√©initialisation du flag apr√®s changement de musique
             }
             // Jouer la nouvelle musique
             musiqueEnCours = pkPlaylist[currentTrackIndex];
