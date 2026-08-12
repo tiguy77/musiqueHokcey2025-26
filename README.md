@@ -1,11 +1,13 @@
 # Aréna DJ
 
-Application Windows moderne pour piloter les musiques d'un match de hockey. L'accès est protégé par une connexion et le bouton **Télécharger les musiques** synchronise en un clic la bibliothèque cloud vers le poste, afin que la lecture reste ensuite locale et fiable pendant le match.
+Application Windows moderne pour piloter les musiques d'un match de hockey. Lorsque le cloud est configuré, l'accès est protégé par une connexion et le bouton **Télécharger les musiques** synchronise en un clic la bibliothèque cloud vers le poste, afin que la lecture reste ensuite locale et fiable pendant le match.
+
+L'application fonctionne aussi sans base de données : si la variable cloud n'est pas configurée, elle ouvre directement la console en **mode local**. La connexion et le téléchargement cloud sont alors désactivés, mais les musiques déjà présentes sur le poste restent utilisables.
 
 ## Configuration sécurisée
 
 1. **Révoquez et régénérez immédiatement tout mot de passe de base de données publié dans une conversation ou un dépôt.** Ne placez jamais l'URL PostgreSQL dans le code.
-2. Définissez la chaîne Neon uniquement sur le poste qui exécute l'application :
+2. Pour activer la connexion et la synchronisation cloud, définissez la chaîne Neon uniquement sur le poste qui exécute l'application :
 
 ```powershell
 $env:MUSIQUE_HOCKEY_DATABASE_URL = "postgresql://UTILISATEUR:MOT_DE_PASSE@HOTE/neondb?sslmode=require"
@@ -30,3 +32,23 @@ Catégories acceptées : `all`, `warmup`, `buts`, `PPLocal`, `PPVis`, `entracte`
 dotnet restore MusiqueHockey/MusiqueHockey.sln
 dotnet build MusiqueHockey/MusiqueHockey.sln
 ```
+
+## Voir la nouvelle interface
+
+L'image de l'ancienne fenêtre intitulée **Musique** provient d'un ancien exécutable. Une modification des fichiers source ne remplace pas automatiquement un raccourci ou un `.exe` déjà copié ailleurs sur le poste.
+
+Depuis la racine du dépôt, publiez une nouvelle copie de l'application avec :
+
+```powershell
+.\publish-windows.ps1
+```
+
+Fermez d'abord toute instance de l'application, puis lancez exclusivement :
+
+```text
+dist\windows-x64\MusiqueHockey.exe
+```
+
+La bonne version est immédiatement reconnaissable : sa barre de titre indique **Aréna DJ 2.0 — Console musicale**, son interface est bleu foncé et elle affiche d'abord l'écran de connexion. Supprimez l'ancien raccourci intitulé **Musique**, ou changez sa cible vers ce nouvel exécutable.
+
+Le script efface toujours le dossier `dist\windows-x64` avant la publication afin qu'aucun ancien binaire ne puisse y rester. Il produit une application Windows autonome : le runtime .NET n'a donc pas besoin d'être installé sur le poste cible.
