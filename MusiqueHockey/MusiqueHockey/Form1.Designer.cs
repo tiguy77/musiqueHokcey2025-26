@@ -1,173 +1,44 @@
-﻿namespace MusiqueHockey
+namespace MusiqueHockey;
+
+partial class Form1
 {
-    partial class Form1
+    private System.ComponentModel.IContainer? components;
+    private Button PlayMusiqueBtn = null!, LocalButBtn = null!, VisiteurButBtn = null!, EntracteBtn = null!, PenLocalBtn = null!, PenVisBtn = null!, WarmUpbtn = null!, SyncButton = null!;
+    private ComboBox LocalBox = null!, VisiteurBox = null!;
+    private Label UserLabel = null!, StatusLabel = null!;
+
+    protected override void Dispose(bool disposing) { if (disposing) components?.Dispose(); base.Dispose(disposing); }
+
+    private void InitializeComponent()
     {
-        /// <summary>
-        ///  Required designer variable.
-        /// </summary>
-        private System.ComponentModel.IContainer components = null;
-
-        /// <summary>
-        ///  Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
-            base.Dispose(disposing);
-        }
-
-        private void InitializeComponent()
-        {
-            PlayMusiqueBtn = new Button();
-            LocalBox = new ComboBox();
-            LocalButBtn = new Button();
-            VisiteurButBtn = new Button();
-            EntracteBtn = new Button();
-            PenLocalBtn = new Button();
-            PenVisBtn = new Button();
-            VisiteurBox = new ComboBox();
-            WarmUpbtn = new Button();
-            SuspendLayout();
-            // 
-            // PlayMusiqueBtn
-            // 
-            PlayMusiqueBtn.Location = new Point(320, 284);
-            PlayMusiqueBtn.Margin = new Padding(4);
-            PlayMusiqueBtn.Name = "PlayMusiqueBtn";
-            PlayMusiqueBtn.Size = new Size(269, 126);
-            PlayMusiqueBtn.TabIndex = 0;
-            PlayMusiqueBtn.Text = "Play Musique";
-            PlayMusiqueBtn.UseVisualStyleBackColor = true;
-            PlayMusiqueBtn.Click += PlayMusiqueBtn_Click;
-            // 
-            // LocalBox
-            // 
-            LocalBox.Font = new Font("Microsoft Sans Serif", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            LocalBox.ForeColor = Color.Black;
-            LocalBox.FormattingEnabled = true;
-            LocalBox.Items.AddRange(new object[] { "Assurance Séguin", "**Seguin Spécial", "Coffrages Thibault", "Concept Phénix", "Fauteux Mini-Moteur", "Hubby Mike", "Laporte&Fils", "Orlando", "Vérisécur" });
-            LocalBox.Location = new Point(29, 49);
-            LocalBox.Margin = new Padding(4);
-            LocalBox.Name = "LocalBox";
-            LocalBox.Size = new Size(210, 28);
-            LocalBox.TabIndex = 3;
-            LocalBox.Text = "Local";
-            // 
-            // LocalButBtn
-            // 
-            LocalButBtn.Location = new Point(29, 128);
-            LocalButBtn.Margin = new Padding(4);
-            LocalButBtn.Name = "LocalButBtn";
-            LocalButBtn.Size = new Size(210, 46);
-            LocalButBtn.TabIndex = 4;
-            LocalButBtn.Text = "But !!";
-            LocalButBtn.UseVisualStyleBackColor = true;
-            LocalButBtn.Click += LocalButBtn_Click;
-            // 
-            // VisiteurButBtn
-            // 
-            VisiteurButBtn.Location = new Point(680, 128);
-            VisiteurButBtn.Margin = new Padding(4);
-            VisiteurButBtn.Name = "VisiteurButBtn";
-            VisiteurButBtn.Size = new Size(210, 46);
-            VisiteurButBtn.TabIndex = 5;
-            VisiteurButBtn.Text = "But !!";
-            VisiteurButBtn.UseVisualStyleBackColor = true;
-            VisiteurButBtn.Click += VisiteurButBtn_Click;
-            // 
-            // EntracteBtn
-            // 
-            EntracteBtn.Location = new Point(349, 210);
-            EntracteBtn.Margin = new Padding(4);
-            EntracteBtn.Name = "EntracteBtn";
-            EntracteBtn.Size = new Size(210, 46);
-            EntracteBtn.TabIndex = 6;
-            EntracteBtn.Text = "Entracte";
-            EntracteBtn.UseVisualStyleBackColor = true;
-            EntracteBtn.Click += EntracteBtn_Click;
-            // 
-            // PenLocalBtn
-            // 
-            PenLocalBtn.Location = new Point(29, 210);
-            PenLocalBtn.Margin = new Padding(4);
-            PenLocalBtn.Name = "PenLocalBtn";
-            PenLocalBtn.Size = new Size(210, 46);
-            PenLocalBtn.TabIndex = 9;
-            PenLocalBtn.Text = "Pénalité";
-            PenLocalBtn.UseVisualStyleBackColor = true;
-            PenLocalBtn.Click += PenLocalBtn_Click;
-            // 
-            // PenVisBtn
-            // 
-            PenVisBtn.Location = new Point(680, 210);
-            PenVisBtn.Margin = new Padding(4);
-            PenVisBtn.Name = "PenVisBtn";
-            PenVisBtn.Size = new Size(210, 46);
-            PenVisBtn.TabIndex = 10;
-            PenVisBtn.Text = "Pénalité";
-            PenVisBtn.UseVisualStyleBackColor = true;
-            PenVisBtn.Click += PenVisBtn_Click;
-            // 
-            // VisiteurBox
-            // 
-            VisiteurBox.Font = new Font("Microsoft Sans Serif", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            VisiteurBox.ForeColor = Color.Black;
-            VisiteurBox.FormattingEnabled = true;
-            VisiteurBox.Items.AddRange(new object[] { "Assurance Séguin", "Coffrages Thibault", "Concept Phénix", "Fauteux Mini-Moteur", "Hubby Mike", "Laporte&Fils", "Orlando", "Vérisécur" });
-            VisiteurBox.Location = new Point(680, 49);
-            VisiteurBox.Margin = new Padding(4);
-            VisiteurBox.Name = "VisiteurBox";
-            VisiteurBox.Size = new Size(210, 28);
-            VisiteurBox.TabIndex = 11;
-            VisiteurBox.Text = "Visiteur";
-            // 
-            // WarmUpbtn
-            // 
-            WarmUpbtn.Location = new Point(349, 72);
-            WarmUpbtn.Margin = new Padding(4);
-            WarmUpbtn.Name = "WarmUpbtn";
-            WarmUpbtn.Size = new Size(210, 46);
-            WarmUpbtn.TabIndex = 12;
-            WarmUpbtn.Text = "Warmup";
-            WarmUpbtn.UseVisualStyleBackColor = true;
-            WarmUpbtn.Click += WarmUpBtn_Click;
-            // 
-            // Form1
-            // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
-            AutoScaleMode = AutoScaleMode.Font;
-            BackgroundImageLayout = ImageLayout.Center;
-            ClientSize = new Size(909, 437);
-            Controls.Add(WarmUpbtn);
-            Controls.Add(VisiteurBox);
-            Controls.Add(PenVisBtn);
-            Controls.Add(PenLocalBtn);
-            Controls.Add(EntracteBtn);
-            Controls.Add(VisiteurButBtn);
-            Controls.Add(LocalButBtn);
-            Controls.Add(LocalBox);
-            Controls.Add(PlayMusiqueBtn);
-            Margin = new Padding(4);
-            Name = "Form1";
-            Text = "Musique";
-            ResumeLayout(false);
-
-        }
-
-        private System.Windows.Forms.Button PlayMusiqueBtn;
-        private System.Windows.Forms.ComboBox LocalBox;
-        private System.Windows.Forms.Button LocalButBtn;
-        private System.Windows.Forms.Button VisiteurButBtn;
-        private System.Windows.Forms.Button EntracteBtn;
-        private System.Windows.Forms.Button PenLocalBtn;
-        private System.Windows.Forms.Button PenVisBtn;
-        private ProgressBar progressBar1;
-        private System.Windows.Forms.Timer timer1;
-        private ComboBox VisiteurBox;
-        private Button WarmUpbtn;
+        Text = "Aréna DJ — Console musicale"; StartPosition = FormStartPosition.CenterScreen;
+        ClientSize = new Size(1120, 700); MinimumSize = new Size(980, 650); BackColor = Color.FromArgb(8, 15, 30);
+        ForeColor = Color.White; Font = new Font("Segoe UI", 10F);
+        var root = new TableLayoutPanel { Dock = DockStyle.Fill, Padding = new Padding(34), RowCount = 4, ColumnCount = 1 };
+        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 90)); root.RowStyles.Add(new RowStyle(SizeType.Absolute, 230));
+        root.RowStyles.Add(new RowStyle(SizeType.Percent, 100)); root.RowStyles.Add(new RowStyle(SizeType.Absolute, 50));
+        var header = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2 };
+        header.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 65)); header.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 35));
+        header.Controls.Add(new Label { Text = "🏒  ARÉNA DJ\n     Console de match", Font = new Font("Segoe UI", 21, FontStyle.Bold), AutoSize = true }, 0, 0);
+        UserLabel = new Label { TextAlign = ContentAlignment.MiddleRight, Dock = DockStyle.Fill, ForeColor = Color.FromArgb(148, 163, 184) };
+        header.Controls.Add(UserLabel, 1, 0); root.Controls.Add(header, 0, 0);
+        var teams = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 3, RowCount = 3, Padding = new Padding(0, 8, 0, 8) };
+        teams.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 35)); teams.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 30)); teams.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 35));
+        LocalBox = MakeCombo(); VisiteurBox = MakeCombo();
+        LocalButBtn = MakeButton("🥅  BUT LOCAL", Color.FromArgb(22, 163, 74)); VisiteurButBtn = MakeButton("🥅  BUT VISITEUR", Color.FromArgb(22, 163, 74));
+        PenLocalBtn = MakeButton("⚡  Pénalité locale", Color.FromArgb(180, 83, 9)); PenVisBtn = MakeButton("⚡  Pénalité visiteur", Color.FromArgb(180, 83, 9));
+        WarmUpbtn = MakeButton("🔥  Échauffement", Color.FromArgb(51, 65, 85));
+        teams.Controls.Add(LocalBox, 0, 0); teams.Controls.Add(VisiteurBox, 2, 0); teams.Controls.Add(LocalButBtn, 0, 1);
+        teams.Controls.Add(WarmUpbtn, 1, 1); teams.Controls.Add(VisiteurButBtn, 2, 1); teams.Controls.Add(PenLocalBtn, 0, 2); teams.Controls.Add(PenVisBtn, 2, 2); root.Controls.Add(teams, 0, 1);
+        var console = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 3, Padding = new Padding(0, 28, 0, 28) };
+        console.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25)); console.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50)); console.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25));
+        EntracteBtn = MakeButton("🎵  Entracte", Color.FromArgb(51, 65, 85)); PlayMusiqueBtn = MakeButton("▶  MUSIQUE / ARRÊT", Color.FromArgb(37, 99, 235));
+        PlayMusiqueBtn.Font = new Font("Segoe UI", 16, FontStyle.Bold); SyncButton = MakeButton("☁  Télécharger les musiques", Color.FromArgb(7, 89, 133));
+        console.Controls.Add(EntracteBtn, 0, 0); console.Controls.Add(PlayMusiqueBtn, 1, 0); console.Controls.Add(SyncButton, 2, 0); root.Controls.Add(console, 0, 2);
+        StatusLabel = new Label { Dock = DockStyle.Fill, ForeColor = Color.FromArgb(148, 163, 184), TextAlign = ContentAlignment.MiddleLeft }; root.Controls.Add(StatusLabel, 0, 3); Controls.Add(root);
+        PlayMusiqueBtn.Click += PlayMusiqueBtn_Click; LocalButBtn.Click += LocalButBtn_Click; VisiteurButBtn.Click += VisiteurButBtn_Click;
+        EntracteBtn.Click += EntracteBtn_Click; PenLocalBtn.Click += PenLocalBtn_Click; PenVisBtn.Click += PenVisBtn_Click; WarmUpbtn.Click += WarmUpBtn_Click; SyncButton.Click += SyncButton_Click;
     }
+    private static Button MakeButton(string text, Color color) { var button = new Button { Text = text, Dock = DockStyle.Fill, Margin = new Padding(8), BackColor = color, ForeColor = Color.White, FlatStyle = FlatStyle.Flat, Font = new Font("Segoe UI", 11, FontStyle.Bold), Cursor = Cursors.Hand }; button.FlatAppearance.BorderSize = 0; return button; }
+    private static ComboBox MakeCombo() => new() { Dock = DockStyle.Fill, Margin = new Padding(8), DropDownStyle = ComboBoxStyle.DropDownList, Font = new Font("Segoe UI", 11), BackColor = Color.FromArgb(30, 41, 59), ForeColor = Color.White };
 }
