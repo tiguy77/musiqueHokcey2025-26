@@ -30,3 +30,23 @@ Catégories acceptées : `all`, `warmup`, `buts`, `PPLocal`, `PPVis`, `entracte`
 dotnet restore MusiqueHockey/MusiqueHockey.sln
 dotnet build MusiqueHockey/MusiqueHockey.sln
 ```
+
+## Voir la nouvelle interface
+
+L'image de l'ancienne fenêtre intitulée **Musique** provient d'un ancien exécutable. Une modification des fichiers source ne remplace pas automatiquement un raccourci ou un `.exe` déjà copié ailleurs sur le poste.
+
+Depuis la racine du dépôt, publiez une nouvelle copie de l'application avec :
+
+```powershell
+.\publish-windows.ps1
+```
+
+Fermez d'abord toute instance de l'application, puis lancez exclusivement :
+
+```text
+dist\windows-x64\MusiqueHockey.exe
+```
+
+La bonne version est immédiatement reconnaissable : sa barre de titre indique **Aréna DJ 2.0 — Console musicale**, son interface est bleu foncé et elle affiche d'abord l'écran de connexion. Supprimez l'ancien raccourci intitulé **Musique**, ou changez sa cible vers ce nouvel exécutable.
+
+Le script efface toujours le dossier `dist\windows-x64` avant la publication afin qu'aucun ancien binaire ne puisse y rester. Il produit une application Windows autonome : le runtime .NET n'a donc pas besoin d'être installé sur le poste cible.
