@@ -11,7 +11,7 @@ partial class Form1
 
     private void InitializeComponent()
     {
-        Text = "Aréna DJ — Console musicale"; StartPosition = FormStartPosition.CenterScreen;
+        Text = "Aréna DJ 2.0 — Console musicale"; StartPosition = FormStartPosition.CenterScreen;
         ClientSize = new Size(1120, 700); MinimumSize = new Size(980, 650); BackColor = Color.FromArgb(8, 15, 30);
         ForeColor = Color.White; Font = new Font("Segoe UI", 10F);
         var root = new TableLayoutPanel { Dock = DockStyle.Fill, Padding = new Padding(34), RowCount = 4, ColumnCount = 1 };
@@ -19,7 +19,7 @@ partial class Form1
         root.RowStyles.Add(new RowStyle(SizeType.Percent, 100)); root.RowStyles.Add(new RowStyle(SizeType.Absolute, 50));
         var header = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2 };
         header.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 65)); header.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 35));
-        header.Controls.Add(new Label { Text = "🏒  ARÉNA DJ\n     Console de match", Font = new Font("Segoe UI", 21, FontStyle.Bold), AutoSize = true }, 0, 0);
+        header.Controls.Add(new Label { Text = "🏒  ARÉNA DJ 2.0\n     Console de match • nouvelle interface", Font = new Font("Segoe UI", 21, FontStyle.Bold), AutoSize = true }, 0, 0);
         UserLabel = new Label { TextAlign = ContentAlignment.MiddleRight, Dock = DockStyle.Fill, ForeColor = Color.FromArgb(148, 163, 184) };
         header.Controls.Add(UserLabel, 1, 0); root.Controls.Add(header, 0, 0);
         var teams = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 3, RowCount = 3, Padding = new Padding(0, 8, 0, 8) };
