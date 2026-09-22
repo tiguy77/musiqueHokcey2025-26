@@ -4,6 +4,14 @@ Application Windows moderne pour piloter les musiques d'un match de hockey. Lors
 
 L'application fonctionne aussi sans base de données : si la variable cloud n'est pas configurée, elle ouvre directement la console en **mode local**. La connexion et le téléchargement cloud sont alors désactivés, mais les musiques déjà présentes sur le poste restent utilisables.
 
+## Console de match
+
+- **Fin de partie** : lit un MP3 dans `netX\musiques\finGame`, à côté du dossier `entracte` (qui demeure indépendant). Plusieurs fichiers MP3 peuvent être placés dans `finGame` : ils sont lus à tour de rôle à chaque nouvelle pression; appuyer pendant une lecture l'arrête. La musique est lue localement, même sans connexion cloud.
+- **Reset** : arrête les musiques en cours, remet les listes de lecture au départ, désélectionne les équipes et réactive les commandes du match. Il ne supprime pas les MP3 téléchargés et ne déconnecte pas l'utilisateur.
+- **EN LECTURE / MUSIQUE SUIVANTE** : panneau au bas de la fenêtre présentant le morceau actif et le prochain morceau de la liste concernée. Pour un jingle ponctuel d'équipe, la musique suivante indiquée est celle de la liste générale. Le panneau est aussi actualisé lorsqu'une piste se termine.
+
+Pour utiliser **Fin de partie**, placez au moins un fichier `.mp3` dans `netX\musiques\finGame` à côté de l'exécutable publié, ou attribuez la catégorie `finGame` à une piste cloud et utilisez **Télécharger les musiques**.
+
 ## Configuration sécurisée
 
 1. **Révoquez et régénérez immédiatement tout mot de passe de base de données publié dans une conversation ou un dépôt.** Ne placez jamais l'URL PostgreSQL dans le code.
@@ -24,7 +32,7 @@ INSERT INTO music_tracks (title, category, download_url, file_name)
 VALUES ('Musique exemple', 'all', 'https://cdn.exemple.ca/musiques/exemple.mp3', 'exemple.mp3');
 ```
 
-Catégories acceptées : `all`, `warmup`, `buts`, `PPLocal`, `PPVis`, `entracte`. Utilisez de préférence des URL signées à courte durée émises par une API plutôt que des fichiers publics pour du contenu privé ou licencié.
+Catégories utilisées : `all`, `warmup`, `buts`, `PPLocal`, `PPVis`, `entracte`, `finGame`. Utilisez de préférence des URL signées à courte durée émises par une API plutôt que des fichiers publics pour du contenu privé ou licencié.
 
 ## Développement
 
@@ -49,6 +57,6 @@ Fermez d'abord toute instance de l'application, puis lancez exclusivement :
 dist\windows-x64\MusiqueHockey.exe
 ```
 
-La bonne version est immédiatement reconnaissable : sa barre de titre indique **Aréna DJ 2.0 — Console musicale**, son interface est bleu foncé et elle affiche d'abord l'écran de connexion. Supprimez l'ancien raccourci intitulé **Musique**, ou changez sa cible vers ce nouvel exécutable.
+La bonne version est immédiatement reconnaissable : sa barre de titre indique **Aréna DJ 2.0 — Console musicale** et son interface est bleu foncé. Si le cloud est configuré, elle affiche d'abord l'écran de connexion; sinon elle démarre en mode local. Supprimez l'ancien raccourci intitulé **Musique**, ou changez sa cible vers ce nouvel exécutable.
 
 Le script efface toujours le dossier `dist\windows-x64` avant la publication afin qu'aucun ancien binaire ne puisse y rester. Il produit une application Windows autonome : le runtime .NET n'a donc pas besoin d'être installé sur le poste cible.
