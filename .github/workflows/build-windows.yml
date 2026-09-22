@@ -2,7 +2,7 @@ name: Build Windows
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, feature/fin-partie-reset-affichage-musique]
   workflow_dispatch:
 
 jobs:

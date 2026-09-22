@@ -13,7 +13,6 @@ public partial class Form1
     private Musique? lastFinPartieTrack;
     private int nextFinPartieIndex;
 
-    // Called by InitializeComponent; the playlist fields in Form1.cs are ready by Shown.
     private void ConfigurePlaybackExtras()
     {
         FinPartieBtn.Click += FinPartieBtn_Click;
@@ -30,20 +29,25 @@ public partial class Form1
 
     private void ReloadFinPartiePlaylist()
     {
-        var folder = Path.Combine(basePath, "netX", "musiques", "finGame");
-        finPartiePlaylist = Directory.Exists(folder)
-            ? Directory.GetFiles(folder, "*.mp3")
-                .OrderBy(path => Path.GetFileName(path), StringComparer.CurrentCultureIgnoreCase)
-                .Select(path => new Musique(Path.GetFileNameWithoutExtension(path), path))
-                .ToList()
-            : new List<Musique>();
+        if (arenaLibrary is not null)
+        {
+            finPartiePlaylist = BuildLibraryPlaylist("finGame");
+        }
+        else
+        {
+            var folder = Path.Combine(basePath, "netX", "musiques", "finGame");
+            finPartiePlaylist = Directory.Exists(folder)
+                ? Directory.GetFiles(folder, "*.mp3")
+                    .OrderBy(path => Path.GetFileName(path), StringComparer.CurrentCultureIgnoreCase)
+                    .Select(path => new Musique(Path.GetFileNameWithoutExtension(path), path)).ToList()
+                : new List<Musique>();
+        }
         if (nextFinPartieIndex >= finPartiePlaylist.Count)
             nextFinPartieIndex = 0;
     }
 
     private void FinPartieBtn_Click(object? sender, EventArgs e)
     {
-        // A second press stops the current finale; the next press plays the next file.
         if (lastFinPartieTrack?.IsPlaying == true)
         {
             lastFinPartieTrack.Stop();
@@ -57,7 +61,7 @@ public partial class Form1
         if (finPartiePlaylist.Count == 0)
         {
             MessageBox.Show(
-                "Aucune musique de fin de partie trouvée. Ajoutez un MP3 dans netX\\musiques\\finGame, puis réessayez.",
+                "Aucune musique de fin de partie trouvée. Importez un MP3 dans Personnaliser > Bibliothèque musicale > Fin de partie.",
                 "Fin de partie", MessageBoxButtons.OK, MessageBoxIcon.Information);
             UpdatePlaybackDisplay();
             return;
@@ -98,7 +102,6 @@ public partial class Form1
         PenVisBtn.Enabled = true;
         FinPartieBtn.Enabled = true;
 
-        // Reset does not delete downloaded music or log the user out.
         InitPlaylist();
         InitPowerPlayPlaylist();
         InitPKPlaylist();
@@ -161,7 +164,6 @@ public partial class Form1
             next = finPartiePlaylist[nextFinPartieIndex];
         else if (playlist is { Count: > 0 })
             next = playlist[(currentTrackIndex + (musiqueStoppee ? 1 : 0)) % playlist.Count];
-
         NextTrackLabel.Text = next?.Nom ?? "—";
     }
 
