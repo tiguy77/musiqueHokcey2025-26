@@ -1,62 +1,58 @@
 # Aréna DJ
 
-Application Windows moderne pour piloter les musiques d'un match de hockey. Lorsque le cloud est configuré, l'accès est protégé par une connexion et le bouton **Télécharger les musiques** synchronise en un clic la bibliothèque cloud vers le poste, afin que la lecture reste ensuite locale et fiable pendant le match.
-
-L'application fonctionne aussi sans base de données : si la variable cloud n'est pas configurée, elle ouvre directement la console en **mode local**. La connexion et le téléchargement cloud sont alors désactivés, mais les musiques déjà présentes sur le poste restent utilisables.
+Application Windows pour piloter les musiques d'un match de hockey. Lorsque le cloud est configuré, l'accès est protégé par une connexion et le bouton **Télécharger les musiques** synchronise la bibliothèque cloud vers le poste afin que la lecture soit locale pendant le match. Sans base de données configurée, l'application démarre directement en **mode local** avec les pistes déjà présentes.
 
 ## Console de match
 
-- **Fin de partie** : lit un MP3 dans `netX\musiques\finGame`, à côté du dossier `entracte` (qui demeure indépendant). Plusieurs fichiers MP3 peuvent être placés dans `finGame` : ils sont lus à tour de rôle à chaque nouvelle pression; appuyer pendant une lecture l'arrête. La musique est lue localement, même sans connexion cloud.
-- **Reset** : arrête les musiques en cours, remet les listes de lecture au départ, désélectionne les équipes et réactive les commandes du match. Il ne supprime pas les MP3 téléchargés et ne déconnecte pas l'utilisateur.
-- **EN LECTURE / MUSIQUE SUIVANTE** : panneau au bas de la fenêtre présentant le morceau actif et le prochain morceau de la liste concernée. Pour un jingle ponctuel d'équipe, la musique suivante indiquée est celle de la liste générale. Le panneau est aussi actualisé lorsqu'une piste se termine.
+- **Fin de partie** : lit les MP3 de la catégorie `finGame`, indépendamment des entractes; plusieurs pistes sont lues à tour de rôle à chaque nouvelle pression. Appuyer pendant la lecture arrête la piste.
+- **Reset** : arrête la lecture, remet les listes au départ, désélectionne les équipes et réactive les commandes. Il ne supprime ni les MP3 ni les préférences personnelles, et ne déconnecte pas l'utilisateur.
+- **EN LECTURE / MUSIQUE SUIVANTE** : panneau au bas de la fenêtre indiquant le morceau actif et le prochain morceau de la liste concernée.
 
-Pour utiliser **Fin de partie**, placez au moins un fichier `.mp3` dans `netX\musiques\finGame` à côté de l'exécutable publié, ou attribuez la catégorie `finGame` à une piste cloud et utilisez **Télécharger les musiques**.
+## Personnaliser (nouvelle section)
+
+Ouvrez **Personnaliser** dans le coin supérieur droit de la console de match. Cet écran permet de gérer les pistes et les équipes sans modifier le code C#.
+
+Dans **Bibliothèque musicale**, sélectionnez d'abord la catégorie correspondant au bouton voulu : Musique générale (`all`), Entracte (`entracte`), Fin de partie (`finGame`), Pénalité locale (`PPLocal`), Pénalité visiteur (`PPvis`), Musiques de but (`buts`) ou Échauffement (`warmup`). Cliquez sur **Importer des MP3** pour copier un ou plusieurs fichiers dans cette catégorie. Vous pouvez modifier leur titre affiché, déplacer les musiques importées entre catégories et supprimer une importation après confirmation. Le programme ne supprime pas les fichiers de la bibliothèque historique : pour les classer ailleurs, importez-en une copie dans la catégorie voulue.
+
+Dans **Équipes et musiques de but**, choisissez une équipe, modifiez son nom et sélectionnez ses musiques de but et d'échauffement dans les deux catégories correspondantes. Cliquez sur **Enregistrer cette équipe** pour confirmer la modification. Les boutons BUT LOCAL et BUT VISITEUR utiliseront la musique de l'équipe sélectionnée; ÉCHAUFFEMENT utilisera celle de l'équipe locale. Les modifications ne changent pas les noms ni les titres dans la base cloud.
+
+Les musiques importées sont copiées dans `%LOCALAPPDATA%\ArenaDJ\musiques\<catégorie>\` et les préférences sont enregistrées dans `%LOCALAPPDATA%\ArenaDJ\preferences.json`. Ces données appartiennent à votre profil Windows et survivent à une nouvelle publication de l'exécutable; effectuez toutefois une sauvegarde de ce dossier avant de changer d'ordinateur. Les fichiers MP3 de l'ancienne bibliothèque, situés à côté de l'exécutable dans `netX\musiques`, restent également disponibles. **Télécharger les musiques** continue de gérer uniquement la bibliothèque cloud : importer un MP3 local ne le téléverse pas vers Neon ou un stockage en ligne.
+
+L'ouverture de Personnaliser réinitialise le match et arrête la lecture en cours après confirmation afin de permettre le déplacement ou la suppression de fichiers audio. La réinitialisation ne supprime jamais les préférences enregistrées.
 
 ## Configuration sécurisée
 
-1. **Révoquez et régénérez immédiatement tout mot de passe de base de données publié dans une conversation ou un dépôt.** Ne placez jamais l'URL PostgreSQL dans le code.
+1. Révoquez tout mot de passe de base de données publié par erreur. Ne placez jamais l'URL PostgreSQL dans le code.
 2. Pour activer la connexion et la synchronisation cloud, définissez la chaîne Neon uniquement sur le poste qui exécute l'application :
 
 ```powershell
 $env:MUSIQUE_HOCKEY_DATABASE_URL = "postgresql://UTILISATEUR:MOT_DE_PASSE@HOTE/neondb?sslmode=require"
 ```
 
-Au premier démarrage, l'application crée les tables `app_users` et `music_tracks`. Pour créer le premier utilisateur, générez un hash PBKDF2 compatible au moyen d'un petit outil d'administration appelant `AuthService.HashPassword`, puis insérez `id`, `email`, `display_name` et `password_hash` dans `app_users`. Les mots de passe ne sont jamais stockés en clair.
+Au premier démarrage, l'application crée les tables `app_users` et `music_tracks`. Pour créer le premier utilisateur, générez un hash PBKDF2 compatible avec `AuthService.HashPassword`, puis insérez `id`, `email`, `display_name` et `password_hash` dans `app_users`. Les mots de passe ne sont pas stockés en clair.
 
-## Stockage des musiques
+## Stockage des musiques dans le cloud
 
-PostgreSQL/Neon convient aux **métadonnées** (titre, catégorie, URL, nom de fichier) et aux comptes, mais pas aux MP3 eux-mêmes. Utilisez un stockage objet (Cloudflare R2, Amazon S3, Azure Blob ou Supabase Storage) et enregistrez une URL HTTPS dans `music_tracks.download_url`.
+PostgreSQL/Neon convient aux métadonnées et aux comptes, pas aux MP3 eux-mêmes. Utilisez un stockage objet (Cloudflare R2, Amazon S3, Azure Blob ou Supabase Storage) et enregistrez une URL HTTPS dans `music_tracks.download_url`.
 
 ```sql
 INSERT INTO music_tracks (title, category, download_url, file_name)
 VALUES ('Musique exemple', 'all', 'https://cdn.exemple.ca/musiques/exemple.mp3', 'exemple.mp3');
 ```
 
-Catégories utilisées : `all`, `warmup`, `buts`, `PPLocal`, `PPVis`, `entracte`, `finGame`. Utilisez de préférence des URL signées à courte durée émises par une API plutôt que des fichiers publics pour du contenu privé ou licencié.
+Catégories cloud utilisées : `all`, `warmup`, `buts`, `PPLocal`, `PPvis`, `entracte`, `finGame`. Pour du contenu privé ou licencié, privilégiez des URL signées à courte durée émises par une API plutôt que des fichiers publics.
 
-## Développement
+## Développement et publication Windows
 
 ```bash
 dotnet restore MusiqueHockey/MusiqueHockey.sln
 dotnet build MusiqueHockey/MusiqueHockey.sln
 ```
 
-## Voir la nouvelle interface
-
-L'image de l'ancienne fenêtre intitulée **Musique** provient d'un ancien exécutable. Une modification des fichiers source ne remplace pas automatiquement un raccourci ou un `.exe` déjà copié ailleurs sur le poste.
-
-Depuis la racine du dépôt, publiez une nouvelle copie de l'application avec :
+Depuis la racine du dépôt, fermez les instances de l'application et publiez une nouvelle copie avec :
 
 ```powershell
 .\publish-windows.ps1
 ```
 
-Fermez d'abord toute instance de l'application, puis lancez exclusivement :
-
-```text
-dist\windows-x64\MusiqueHockey.exe
-```
-
-La bonne version est immédiatement reconnaissable : sa barre de titre indique **Aréna DJ 2.0 — Console musicale** et son interface est bleu foncé. Si le cloud est configuré, elle affiche d'abord l'écran de connexion; sinon elle démarre en mode local. Supprimez l'ancien raccourci intitulé **Musique**, ou changez sa cible vers ce nouvel exécutable.
-
-Le script efface toujours le dossier `dist\windows-x64` avant la publication afin qu'aucun ancien binaire ne puisse y rester. Il produit une application Windows autonome : le runtime .NET n'a donc pas besoin d'être installé sur le poste cible.
+Démarrez ensuite `dist\windows-x64\MusiqueHockey.exe` et actualisez votre raccourci Windows. L'ancien exécutable ne se met pas à jour tout seul. Le script efface le dossier `dist\windows-x64` avant publication, mais ne touche pas à la bibliothèque personnelle stockée dans `%LOCALAPPDATA%\ArenaDJ`. L'exécutable publié inclut le runtime .NET nécessaire.
