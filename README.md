@@ -1,11 +1,13 @@
 # Aréna DJ
 
-Application Windows moderne pour piloter les musiques d'un match de hockey. L'accès est protégé par une connexion et le bouton **Télécharger les musiques** synchronise en un clic la bibliothèque cloud vers le poste, afin que la lecture reste ensuite locale et fiable pendant le match.
+Application Windows moderne pour piloter les musiques d'un match de hockey. Lorsque le cloud est configuré, l'accès est protégé par une connexion et le bouton **Télécharger les musiques** synchronise en un clic la bibliothèque cloud vers le poste, afin que la lecture reste ensuite locale et fiable pendant le match.
+
+L'application fonctionne aussi sans base de données : si la variable cloud n'est pas configurée, elle ouvre directement la console en **mode local**. La connexion et le téléchargement cloud sont alors désactivés, mais les musiques déjà présentes sur le poste restent utilisables.
 
 ## Configuration sécurisée
 
 1. **Révoquez et régénérez immédiatement tout mot de passe de base de données publié dans une conversation ou un dépôt.** Ne placez jamais l'URL PostgreSQL dans le code.
-2. Définissez la chaîne Neon uniquement sur le poste qui exécute l'application :
+2. Pour activer la connexion et la synchronisation cloud, définissez la chaîne Neon uniquement sur le poste qui exécute l'application :
 
 ```powershell
 $env:MUSIQUE_HOCKEY_DATABASE_URL = "postgresql://UTILISATEUR:MOT_DE_PASSE@HOTE/neondb?sslmode=require"

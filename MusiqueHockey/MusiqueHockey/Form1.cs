@@ -38,10 +38,10 @@ namespace MusiqueHockey
         private int currentTrackIndex = 0;
         private int warmupTrackIndex = 0;
         private Musique musiqueEnCours;
-        private readonly CloudMusicService cloudMusicService;
-        private readonly AppUser currentUser;
+        private readonly CloudMusicService? cloudMusicService;
+        private readonly AppUser? currentUser;
 
-        public Form1(CloudMusicService cloudMusicService, AppUser currentUser)
+        public Form1(CloudMusicService? cloudMusicService = null, AppUser? currentUser = null)
         {
             this.cloudMusicService = cloudMusicService;
             this.currentUser = currentUser;
@@ -59,12 +59,26 @@ namespace MusiqueHockey
             InitPowerPlayPlaylist();
             InitPKPlaylist();
             InitEntracte();
-            UserLabel.Text = currentUser.DisplayName;
-            StatusLabel.Text = $"Prêt • {playlist.Count} pistes locales";
+            UserLabel.Text = currentUser?.DisplayName ?? "Mode local";
+            SyncButton.Enabled = cloudMusicService is not null;
+            SyncButton.Text = cloudMusicService is null
+                ? "☁  Cloud non configuré"
+                : "☁  Télécharger les musiques";
+            StatusLabel.Text = cloudMusicService is null
+                ? $"Mode hors ligne • {playlist.Count} pistes locales"
+                : $"Prêt • {playlist.Count} pistes locales";
         }
 
         private async void SyncButton_Click(object sender, EventArgs e)
         {
+            if (cloudMusicService is null)
+            {
+                MessageBox.Show(
+                    "Configurez MUSIQUE_HOCKEY_DATABASE_URL pour activer la connexion et la synchronisation cloud. Les musiques locales restent disponibles sans cette configuration.",
+                    "Cloud non configuré", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
             SyncButton.Enabled = false;
             SyncButton.Text = "Synchronisation…";
             try

@@ -14,9 +14,7 @@ namespace MusiqueHockey
             var connectionString = Environment.GetEnvironmentVariable("MUSIQUE_HOCKEY_DATABASE_URL");
             if (string.IsNullOrWhiteSpace(connectionString))
             {
-                MessageBox.Show(
-                    "La variable MUSIQUE_HOCKEY_DATABASE_URL n'est pas configurée. Consultez le README.",
-                    "Configuration requise", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                Application.Run(new Form1());
                 return;
             }
 
@@ -27,8 +25,10 @@ namespace MusiqueHockey
             }
             catch (Exception exception)
             {
-                MessageBox.Show($"Connexion au service cloud impossible.\n\n{exception.Message}",
-                    "Service indisponible", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    $"Le service cloud est temporairement indisponible. L'application va démarrer avec les musiques locales.\n\n{exception.Message}",
+                    "Mode hors ligne", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                Application.Run(new Form1());
                 return;
             }
 
