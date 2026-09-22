@@ -4,7 +4,7 @@ partial class Form1
 {
     private System.ComponentModel.IContainer? components;
     private Button PlayMusiqueBtn = null!, LocalButBtn = null!, VisiteurButBtn = null!, EntracteBtn = null!, PenLocalBtn = null!, PenVisBtn = null!, WarmUpbtn = null!, SyncButton = null!;
-    private Button FinPartieBtn = null!, ResetButton = null!;
+    private Button FinPartieBtn = null!, ResetButton = null!, SettingsButton = null!;
     private ComboBox LocalBox = null!, VisiteurBox = null!;
     private Label UserLabel = null!, StatusLabel = null!, CurrentTrackLabel = null!, NextTrackLabel = null!;
 
@@ -23,11 +23,16 @@ partial class Form1
         root.RowStyles.Add(new RowStyle(SizeType.Absolute, 104));
         root.RowStyles.Add(new RowStyle(SizeType.Absolute, 42));
 
-        var header = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2 };
-        header.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 65)); header.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 35));
+        var header = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 3 };
+        header.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+        header.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25));
+        header.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25));
         header.Controls.Add(new Label { Text = "🏒  ARÉNA DJ 2.0\n     Console de match", Font = new Font("Segoe UI", 21, FontStyle.Bold), AutoSize = true }, 0, 0);
         UserLabel = new Label { TextAlign = ContentAlignment.MiddleRight, Dock = DockStyle.Fill, ForeColor = Color.FromArgb(148, 163, 184) };
-        header.Controls.Add(UserLabel, 1, 0); root.Controls.Add(header, 0, 0);
+        SettingsButton = MakeButton("⚙  Personnaliser", Color.FromArgb(51, 65, 85));
+        header.Controls.Add(UserLabel, 1, 0);
+        header.Controls.Add(SettingsButton, 2, 0);
+        root.Controls.Add(header, 0, 0);
 
         var teams = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 3, RowCount = 3, Padding = new Padding(0, 8, 0, 8) };
         teams.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 35));
@@ -90,6 +95,7 @@ partial class Form1
         WarmUpbtn.Click += WarmUpBtn_Click;
         SyncButton.Click += SyncButton_Click;
         ConfigurePlaybackExtras();
+        ConfigurePersonalization();
     }
 
     private static Button MakeButton(string text, Color color)
