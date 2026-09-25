@@ -26,7 +26,12 @@ public sealed class PersonalizationForm : Form
     private readonly Dictionary<string, Equipe> originalTeams;
     private readonly ComboBox categoryBox = new() { DropDownStyle = ComboBoxStyle.DropDownList, Width = 230 };
     private readonly ComboBox destinationBox = new() { DropDownStyle = ComboBoxStyle.DropDownList, Width = 220 };
-    private readonly ListBox songList = new() { Dock = DockStyle.Fill, IntegralHeight = false };
+    private readonly ListBox songList = new()
+    {
+        Dock = DockStyle.Fill,
+        IntegralHeight = false,
+        AllowDrop = true
+    };
     private readonly Label songsInfo = new() { Dock = DockStyle.Fill, AutoSize = false };
     private readonly ComboBox teamBox = new() { DropDownStyle = ComboBoxStyle.DropDownList, Width = 350 };
     private readonly TextBox teamName = new() { Width = 440, MaxLength = 100 };
@@ -114,11 +119,15 @@ public sealed class PersonalizationForm : Form
         songList.BackColor = Color.FromArgb(30, 41, 59);
         songList.ForeColor = Color.White;
         songList.Font = new Font("Segoe UI", 11F);
+        songList.DragEnter += SongList_DragEnter;
+        songList.DragOver += SongList_DragEnter;
+        songList.DragLeave += (_, _) => SetDropVisual(false);
+        songList.DragDrop += async (_, e) => await PerformAsync(() => ImportDroppedFilesAsync(e));
         root.Controls.Add(songList, 0, 1);
         root.Controls.Add(songsInfo, 0, 2);
 
         var operations = new FlowLayoutPanel { Dock = DockStyle.Fill, WrapContents = false, AutoScroll = true };
-        var import = ActionButton("Importer des MP3");
+        var import = ActionButton("Parcourir dans l’Explorateur");
         var rename = ActionButton("Renommer le titre");
         var remove = ActionButton("Supprimer l'import");
 
@@ -214,7 +223,7 @@ public sealed class PersonalizationForm : Form
         var match = songList.Items.Cast<LibraryTrack>().FirstOrDefault(x => x.Path == previous);
         if (match is not null) songList.SelectedItem = match;
 
-        songsInfo.Text = $"{songList.Items.Count} musique(s) — les titres marqués « ancienne bibliothèque » ne sont pas supprimés par cet écran.";
+        songsInfo.Text = $"{songList.Items.Count} musique(s) • Glissez-déposez des MP3 ici depuis l’Explorateur Windows, ou utilisez Parcourir.";
         if (destinationBox.SelectedIndex < 0) destinationBox.SelectedIndex = categoryBox.SelectedIndex;
     }
 
@@ -224,36 +233,103 @@ public sealed class PersonalizationForm : Form
 
         using var picker = new OpenFileDialog
         {
-            Title = $"Importer dans : {category.Label}",
+            Title = $"Ajouter des MP3 à : {category.Label}",
             Filter = "Fichiers MP3 (*.mp3)|*.mp3",
             Multiselect = true,
             CheckFileExists = true,
             CheckPathExists = true,
+            DereferenceLinks = true,
             RestoreDirectory = true,
             InitialDirectory = GetImportStartFolder(),
 
-            // The modern Explorer-based file picker can hang while resolving
-            // recent/network/cloud locations on some Windows installations.
-            // Force the simpler native picker for a predictable local import.
-            AutoUpgradeEnabled = false
+            // Use the current Windows Explorer-style file picker.
+            AutoUpgradeEnabled = true
         };
 
         if (picker.ShowDialog(this) != DialogResult.OK) return;
+        await ImportPathsAsync(picker.FileNames, importButton);
+    }
 
-        var originalText = importButton.Text;
-        importButton.Enabled = false;
+    private void SongList_DragEnter(object? sender, DragEventArgs e)
+    {
+        var files = GetDroppedMp3Files(e);
+        var accepted = files.Length > 0;
+        e.Effect = accepted ? DragDropEffects.Copy : DragDropEffects.None;
+        SetDropVisual(accepted);
+    }
+
+    private async Task ImportDroppedFilesAsync(DragEventArgs e)
+    {
+        SetDropVisual(false);
+        var files = GetDroppedMp3Files(e);
+        if (files.Length == 0)
+        {
+            MessageBox.Show(
+                this,
+                "Déposez un ou plusieurs fichiers MP3 provenant de l’Explorateur Windows.",
+                "Importation",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+            return;
+        }
+
+        await ImportPathsAsync(files, null);
+    }
+
+    private static string[] GetDroppedMp3Files(DragEventArgs e)
+    {
+        if (!e.Data.GetDataPresent(DataFormats.FileDrop))
+            return Array.Empty<string>();
+
+        return (e.Data.GetData(DataFormats.FileDrop) as string[] ?? Array.Empty<string>())
+            .Where(path =>
+                File.Exists(path) &&
+                string.Equals(Path.GetExtension(path), ".mp3", StringComparison.OrdinalIgnoreCase))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+    }
+
+    private void SetDropVisual(bool active)
+    {
+        songList.BackColor = active
+            ? Color.FromArgb(30, 64, 100)
+            : Color.FromArgb(30, 41, 59);
+
+        if (active)
+            songsInfo.Text = "Relâchez pour importer les MP3 dans la section sélectionnée.";
+        else if (categoryBox.SelectedItem is Option)
+            songsInfo.Text = $"{songList.Items.Count} musique(s) • Glissez-déposez des MP3 ici depuis l’Explorateur Windows, ou utilisez Parcourir.";
+    }
+
+    private async Task ImportPathsAsync(IEnumerable<string> paths, Button? importButton)
+    {
+        if (categoryBox.SelectedItem is not Option category) return;
+
+        var files = paths
+            .Where(path =>
+                File.Exists(path) &&
+                string.Equals(Path.GetExtension(path), ".mp3", StringComparison.OrdinalIgnoreCase))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+
+        if (files.Length == 0) return;
+
+        var originalText = importButton?.Text;
+        if (importButton is not null)
+            importButton.Enabled = false;
 
         try
         {
             var count = 0;
-            for (var index = 0; index < picker.FileNames.Length; index++)
+            for (var index = 0; index < files.Length; index++)
             {
-                var path = picker.FileNames[index];
+                var path = files[index];
                 var fileName = Path.GetFileName(path);
 
-                importButton.Text = $"Importation {index + 1}/{picker.FileNames.Length}";
-                songsInfo.Text = $"Importation de « {fileName} »…";
-                Application.DoEvents();
+                if (importButton is not null)
+                    importButton.Text = $"Importation {index + 1}/{files.Length}";
+
+                songsInfo.Text = $"Importation de « {fileName} » vers {category.Label}…";
 
                 using var timeout = new CancellationTokenSource(TimeSpan.FromMinutes(2));
                 try
@@ -278,8 +354,11 @@ public sealed class PersonalizationForm : Form
         }
         finally
         {
-            importButton.Enabled = true;
-            importButton.Text = originalText;
+            if (importButton is not null)
+            {
+                importButton.Enabled = true;
+                importButton.Text = originalText ?? "Parcourir dans l’Explorateur";
+            }
         }
     }
 
