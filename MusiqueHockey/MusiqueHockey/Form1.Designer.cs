@@ -38,12 +38,21 @@ partial class Form1
         teams.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 35));
         teams.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 30));
         teams.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 35));
+        teams.RowStyles.Add(new RowStyle(SizeType.Absolute, 42));
+        teams.RowStyles.Add(new RowStyle(SizeType.Percent, 50));
+        teams.RowStyles.Add(new RowStyle(SizeType.Percent, 50));
+
         LocalBox = MakeCombo(); VisiteurBox = MakeCombo();
         LocalButBtn = MakeButton("🥅  BUT LOCAL", Color.FromArgb(22, 163, 74));
         VisiteurButBtn = MakeButton("🥅  BUT VISITEUR", Color.FromArgb(22, 163, 74));
         PenLocalBtn = MakeButton("⚡  Pénalité locale", Color.FromArgb(180, 83, 9));
         PenVisBtn = MakeButton("⚡  Pénalité visiteur", Color.FromArgb(180, 83, 9));
         WarmUpbtn = MakeButton("🔥  Échauffement", Color.FromArgb(51, 65, 85));
+
+        LocalButBtn.Font = new Font("Segoe UI", 11, FontStyle.Bold);
+        VisiteurButBtn.Font = new Font("Segoe UI", 11, FontStyle.Bold);
+        WarmUpbtn.Font = new Font("Segoe UI", 11, FontStyle.Bold);
+
         teams.Controls.Add(LocalBox, 0, 0); teams.Controls.Add(VisiteurBox, 2, 0);
         teams.Controls.Add(LocalButBtn, 0, 1); teams.Controls.Add(WarmUpbtn, 1, 1);
         teams.Controls.Add(VisiteurButBtn, 2, 1); teams.Controls.Add(PenLocalBtn, 0, 2);
