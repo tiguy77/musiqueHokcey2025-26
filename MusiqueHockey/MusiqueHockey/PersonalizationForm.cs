@@ -226,7 +226,16 @@ public sealed class PersonalizationForm : Form
         {
             Title = $"Importer dans : {category.Label}",
             Filter = "Fichiers MP3 (*.mp3)|*.mp3",
-            Multiselect = true
+            Multiselect = true,
+            CheckFileExists = true,
+            CheckPathExists = true,
+            RestoreDirectory = true,
+            InitialDirectory = GetImportStartFolder(),
+
+            // The modern Explorer-based file picker can hang while resolving
+            // recent/network/cloud locations on some Windows installations.
+            // Force the simpler native picker for a predictable local import.
+            AutoUpgradeEnabled = false
         };
 
         if (picker.ShowDialog(this) != DialogResult.OK) return;
@@ -272,6 +281,19 @@ public sealed class PersonalizationForm : Form
             importButton.Enabled = true;
             importButton.Text = originalText;
         }
+    }
+
+    private static string GetImportStartFolder()
+    {
+        var music = Environment.GetFolderPath(Environment.SpecialFolder.MyMusic);
+        if (!string.IsNullOrWhiteSpace(music) && Directory.Exists(music))
+            return music;
+
+        var desktop = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+        if (!string.IsNullOrWhiteSpace(desktop) && Directory.Exists(desktop))
+            return desktop;
+
+        return Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
     }
 
     private void RenameSong()
