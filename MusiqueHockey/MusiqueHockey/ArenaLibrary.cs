@@ -103,15 +103,18 @@ public sealed class ArenaLibrary
 
         try
         {
-            await using var input = new FileStream(
-                source, FileMode.Open, FileAccess.Read, FileShare.Read,
-                128 * 1024, FileOptions.Asynchronous | FileOptions.SequentialScan);
-            await using var output = new FileStream(
-                temporary, FileMode.CreateNew, FileAccess.Write, FileShare.None,
-                128 * 1024, FileOptions.Asynchronous | FileOptions.SequentialScan);
+            await using (var input = new FileStream(
+                             source, FileMode.Open, FileAccess.Read, FileShare.Read,
+                             128 * 1024, FileOptions.Asynchronous | FileOptions.SequentialScan))
+            await using (var output = new FileStream(
+                             temporary, FileMode.CreateNew, FileAccess.Write, FileShare.None,
+                             128 * 1024, FileOptions.Asynchronous | FileOptions.SequentialScan))
+            {
+                await input.CopyToAsync(output, 128 * 1024, cancellationToken);
+                await output.FlushAsync(cancellationToken);
+            }
 
-            await input.CopyToAsync(output, 128 * 1024, cancellationToken);
-            await output.FlushAsync(cancellationToken);
+            // Both streams must be closed before Windows can rename the temporary file.
             File.Move(temporary, target);
             return target;
         }
