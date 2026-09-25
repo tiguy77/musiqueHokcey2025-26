@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MusiqueHockey;
 
@@ -11,6 +13,8 @@ public sealed class TeamPreference
     public string Name { get; set; } = "";
     public string? GoalPath { get; set; }
     public string? WarmupPath { get; set; }
+    public bool IsCustom { get; set; }
+    public bool Deleted { get; set; }
 }
 
 public sealed class ArenaPreferences
@@ -83,16 +87,49 @@ public sealed class ArenaLibrary
         return results.OrderBy(track => track.Title, StringComparer.CurrentCultureIgnoreCase).ToList();
     }
 
-    public string Add(string source, string category)
+    public async Task<string> AddAsync(string source, string category, CancellationToken cancellationToken = default)
     {
         if (!Categories.Any(item => item.Key == category)) throw new ArgumentException("Catégorie inconnue.");
         if (!string.Equals(Path.GetExtension(source), ".mp3", StringComparison.OrdinalIgnoreCase))
             throw new ArgumentException("Sélectionnez un fichier MP3.");
+        if (!File.Exists(source))
+            throw new FileNotFoundException("Le fichier sélectionné n'est plus accessible.", source);
+
         var directory = Path.Combine(ImportedRoot, category);
         Directory.CreateDirectory(directory);
+
         var target = AvailableName(directory, Path.GetFileName(source));
-        File.Copy(source, target);
-        return target;
+        var temporary = target + ".importing";
+
+        try
+        {
+            await using (var input = new FileStream(
+                             source, FileMode.Open, FileAccess.Read, FileShare.Read,
+                             128 * 1024, FileOptions.Asynchronous | FileOptions.SequentialScan))
+            await using (var output = new FileStream(
+                             temporary, FileMode.CreateNew, FileAccess.Write, FileShare.None,
+                             128 * 1024, FileOptions.Asynchronous | FileOptions.SequentialScan))
+            {
+                await input.CopyToAsync(output, 128 * 1024, cancellationToken);
+                await output.FlushAsync(cancellationToken);
+            }
+
+            // Both streams must be closed before Windows can rename the temporary file.
+            File.Move(temporary, target);
+            return target;
+        }
+        catch
+        {
+            try
+            {
+                if (File.Exists(temporary)) File.Delete(temporary);
+            }
+            catch
+            {
+                // The original import error is more useful than a cleanup error.
+            }
+            throw;
+        }
     }
 
     public string Move(LibraryTrack song, string category)
@@ -133,7 +170,7 @@ public sealed class ArenaLibrary
         var stem = Path.GetFileNameWithoutExtension(filename);
         var extension = Path.GetExtension(filename);
         var target = Path.Combine(directory, filename);
-        for (var number = 2; File.Exists(target); number++)
+        for (var number = 2; File.Exists(target) || File.Exists(target + ".importing"); number++)
             target = Path.Combine(directory, $"{stem} ({number}){extension}");
         return target;
     }
