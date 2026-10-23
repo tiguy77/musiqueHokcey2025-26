@@ -6,6 +6,8 @@ $root = $PSScriptRoot
 $project = Join-Path $root "MusiqueHockey\MusiqueHockey\MusiqueHockey.csproj"
 $output = Join-Path $root "dist\windows-x64"
 
+# bin/obj/.vs are intentionally excluded from source control; only this fresh publish is packaged.
+
 if (Test-Path $output) {
     Remove-Item $output -Recurse -Force
 }
