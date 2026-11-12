@@ -56,3 +56,11 @@ Depuis la racine du dépôt, fermez les instances de l'application et publiez un
 ```
 
 Démarrez ensuite `dist\windows-x64\MusiqueHockey.exe` et actualisez votre raccourci Windows. L'ancien exécutable ne se met pas à jour tout seul. Le script efface le dossier `dist\windows-x64` avant publication, mais ne touche pas à la bibliothèque personnelle stockée dans `%LOCALAPPDATA%\ArenaDJ`. L'exécutable publié inclut le runtime .NET nécessaire.
+
+## Licence
+
+Le code original d’Aréna DJ est distribué sous [licence MIT](LICENSE). Les composants tiers conservent leurs propres licences. Cette licence ne concède aucun droit sur les musiques importées par les utilisateurs, les marques ou les contenus de tiers.
+
+## Code signing policy
+
+La candidature à SignPath Foundation est en préparation; aucune signature SignPath n’est actuellement active. Consultez le [dossier et les étapes de mise en place](docs/SIGNPATH_APPLICATION.md). L’installateur public v2.0.5 reste non signé tant qu’une nouvelle version signée n’a pas été explicitement publiée.
